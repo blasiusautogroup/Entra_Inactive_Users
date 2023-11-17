@@ -1,3 +1,5 @@
+Import-Module AzureAD
+
 $clientId = $env:CLIENT
 $clientSecret = $env:SECRET
 $tenantId = $env:TENANT
