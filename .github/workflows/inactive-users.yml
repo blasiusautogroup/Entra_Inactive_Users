@@ -14,16 +14,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # - name: Cache AzureAD Module
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: ~\Documents\PowerShell\Modules\AzureAD
-      #     key: ${{ runner.os }}-AzureADModule
-
       - name: Install required modules
         run: |
-          Install-Module -Name MSAL.PS -Force -Scope CurrentUser
-          Install-Module -Name AzureAD -Force -Scope CurrentUser
+          Install-Module -Name MSAL.PS -Force -Scope CurrentUser -Verbose
+          Install-Module -Name AzureAD -Force -Scope CurrentUser -Verbose
+
+      - name: Set Execution Policy
+        run: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
       - name: Run PowerShell script
         env:
