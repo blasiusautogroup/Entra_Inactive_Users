@@ -1,3 +1,6 @@
+Write-Output "Client ID: $env:AZURE_CLIENT_ID"
+Write-Output "Tenant ID: $env:AZURE_TENANT_ID"
+
 # Connect to Microsoft Graph
 Connect-MgGraph -EnvironmentVariable
 
