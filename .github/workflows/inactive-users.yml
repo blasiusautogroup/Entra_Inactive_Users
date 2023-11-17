@@ -2,7 +2,7 @@ name: Check Inactive Users
 
 on:
   schedule:
-    - cron: '50 21 * * *' # Runs every day at midnight
+    - cron: '56 21 * * *' # Runs every day at midnight
 
 jobs:
   check-inactive-users:
@@ -23,4 +23,4 @@ jobs:
           $clientSecret = $env:SECRET
           $tenantId = $env:TENANT
           $groupObjectId = $env:GROUP_OBJECT_ID
-          $teamsWebhookUrl: $env:TEAM_WEBHOOK_URL
+          $teamsWebhookUrl = $env:TEAM_WEBHOOK_URL
