@@ -2,18 +2,15 @@ $clientId = $env:CLIENT
 $clientSecret = $env:SECRET
 $tenantId = $env:TENANT
 
-# Acquire token
-$token = Get-MsalToken -ClientId $clientId -TenantId $tenantId -ClientSecret (ConvertTo-SecureString $clientSecret -AsPlainText -Force)
-
-# Connect to Azure AD
-Connect-AzureAD -AadAccessToken $token.AccessToken -AccountId $clientId -TenantId $tenantId
+# Example of acquiring a token for Microsoft Graph
+$token = Get-MgAccessToken -ClientId $clientId -TenantId $tenantId -ClientSecret (ConvertTo-SecureString $clientSecret -AsPlainText -Force)
 
 $groupObjectId = $env:GROUP_OBJECT_ID
 $daysThreshold = 30
 $currentDate = Get-Date
 $addedUsers = @()
 
-$users = Get-AzureADUser -All $true
+$users = Get-MgUser -All $true
 
 Write-Output "start th process of users..."
 
