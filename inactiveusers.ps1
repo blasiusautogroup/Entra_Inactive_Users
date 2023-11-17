@@ -1,52 +1,39 @@
-$clientId = $env:CLIENT
-$clientSecret = $env:SECRET
-$tenantId = $env:TENANT
+name: Check Inactive Users on Ubuntu
 
-# Acquire token
-$token = Get-MsalToken -ClientId $clientId -TenantId $tenantId -ClientSecret (ConvertTo-SecureString $clientSecret -AsPlainText -Force)
+on:
+  schedule:
+    - cron: '15 22 * * *' # Runs every day at 22:15 UTC
+  workflow_dispatch:
+  push:
+    branches: [main]
 
-# Connect to Azure AD
-Connect-AzureAD -AadAccessToken $token.AccessToken -AccountId $clientId -TenantId $tenantId
+jobs:
+  check-inactive-users:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v3
 
-$groupObjectId = $env:GROUP_OBJECT_ID
-$daysThreshold = 30
-$currentDate = Get-Date
-$addedUsers = @()
+      - name: Setup PowerShell module cache
+        uses: actions/cache@v3
+        with:
+          path: "~/.local/share/powershell/Modules"
+          key: ${{ runner.os }}-SqlServer-PSScriptAnalyzer
 
-$users = Get-AzureADUser -All $true
+      - name: Install MSAL.PS Module
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          Set-PSRepository PSGallery -InstallationPolicy Trusted
+          Install-Module MSAL.PS -Force -Scope CurrentUser -Verbose
+        shell: pwsh
 
-Write-Output "start th process of users..."
-
-foreach ($user in $users) {
-    $lastSignIn = (Get-AzureADUserSignInLogs -ObjectId $user.ObjectId | Sort-Object CreatedDateTime -Descending | Select-Object -First 1).CreatedDateTime
-
-    if ($lastSignIn -and ($currentDate - $lastSignIn).Days -gt $daysThreshold) {
-        Add-AzureADGroupMember -ObjectId $groupObjectId -RefObjectId $user.ObjectId
-        $addedUsers += $user.DisplayName
-        Write-Output "Added user $($user.DisplayName) to group."
-    }
-    Write-Output "User skipped $($user.DisplayName) to group."
-}
-
-Disconnect-AzureAD
-
-# Teams Webhook URL
-$teamsWebhookUrl = $env:TEAM_WEBHOOK_URL
-
-if ($addedUsers.Count -gt 0) {
-    Write-Output "Sending message Teams webhook"
-    $message = "The following users were added to the group due to inactivity: `n" + ($addedUsers -join "`n")
-    
-    try {
-        $body = @{
-            text = $message
-        } | ConvertTo-Json
-
-        Invoke-RestMethod -Uri $teamsWebhookUrl -Method Post -Body $body -ContentType 'application/json'
-
-        Write-Output "Message sent to Teams successfully."
-    } catch {
-        Write-Output "Error sending message to Teams: $_"
-    }
-
-}
+      - name: Run PowerShell script
+        env:
+          CLIENT: ${{ secrets.CLIENT }}
+          SECRET: ${{ secrets.SECRET }}
+          TENANT: ${{ secrets.TENANT }}
+          GROUP_OBJECT_ID: ${{ secrets.GROUP_OBJECT_ID }}
+          TEAM_WEBHOOK_URL: ${{ secrets.TEAM_WEBHOOK_URL }}
+        run: |
+          pwsh -File ./inactiveusers.ps1
+        shell: pwsh
