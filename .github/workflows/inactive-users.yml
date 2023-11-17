@@ -21,9 +21,9 @@ jobs:
 
       - name: Run PowerShell script
         env:
-          CLIENT: ${{ secrets.CLIENT }}
-          SECRET: ${{ secrets.SECRET }}
-          TENANT: ${{ secrets.TENANT }}
+          AZURE_CLIENT_ID: ${{ secrets.CLIENT }}
+          AZURE_CLIENT_SECRET: ${{ secrets.SECRET }}
+          AZURE_TENANT_ID: ${{ secrets.TENANT }}
           GROUP_OBJECT_ID: ${{ secrets.GROUP_OBJECT_ID }}
           TEAM_WEBHOOK_URL: ${{ secrets.TEAM_WEBHOOK_URL }}
         run: |
