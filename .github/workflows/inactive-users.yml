@@ -32,5 +32,6 @@ jobs:
           TENANT: ${{ secrets.TENANT }}
           GROUP_OBJECT_ID: '6c1b5bfa-a803-454a-8432-db74de88c01e'
           TEAM_WEBHOOK_URL: ${{ secrets.TEAM_WEBHOOK_URL }}
+        shell: powershell
         run: |
           .\inactiveusers.ps1
