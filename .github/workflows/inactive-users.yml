@@ -3,8 +3,9 @@ name: Check Inactive Users
 on:
   schedule:
     - cron: '15 22 * * *' # Runs every day at midnight
-  watch:
-    types: [started]
+  workflow_dispatch:
+  push:
+    branches: [main]
 
 jobs:
   check-inactive-users:
