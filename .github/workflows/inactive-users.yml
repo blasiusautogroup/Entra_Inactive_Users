@@ -2,7 +2,7 @@ name: Check Inactive Users
 
 on:
   schedule:
-    - cron: '56 21 * * *' # Runs every day at midnight
+    - cron: '02 22 * * *' # Runs every day at midnight
 
 jobs:
   check-inactive-users:
