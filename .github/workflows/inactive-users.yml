@@ -19,9 +19,8 @@ jobs:
           GROUP_OBJECT_ID: '6c1b5bfa-a803-454a-8432-db74de88c01e'
           TEAM_WEBHOOK_URL: ${{ secrets.TEAM_WEBHOOK_URL }}
         run: |
-          $clientId = $env:AZURE_AD_CLIENT_ID
-          $clientSecret = $env:AZURE_AD_CLIENT_SECRET
-          $tenantId = $env:AZURE_AD_TENANT_ID
+          $clientId = $env:CLIENT
+          $clientSecret = $env:SECRET
+          $tenantId = $env:TENANT
           $groupObjectId = $env:GROUP_OBJECT_ID
-          $emailFrom = $env:EMAIL_FROM
-          $emailTo = $env:EMAIL_TO
+          $teamsWebhookUrl: $env:TEAM_WEBHOOK_URL
