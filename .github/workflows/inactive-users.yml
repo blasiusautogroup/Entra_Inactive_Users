@@ -22,7 +22,7 @@ jobs:
 
       - name: Install required modules
         run: |
-          Install-Module -Name Microsoft.IdentityModel.Clients.ActiveDirectory -Force -Scope CurrentUser
+          Install-Module -Name MSAL.PS -Force -Scope CurrentUser
           Install-Module -Name AzureAD -Force -Scope CurrentUser
 
       - name: Run PowerShell script

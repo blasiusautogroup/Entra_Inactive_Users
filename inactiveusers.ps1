@@ -2,19 +2,11 @@ $clientId = $env:CLIENT
 $clientSecret = $env:SECRET
 $tenantId = $env:TENANT
 
-# Convert secret to a secure string
-$secureClientSecret = ConvertTo-SecureString $clientSecret -AsPlainText -Force
+# Acquire token
+$token = Get-MsalToken -ClientId $clientId -TenantId $tenantId -ClientSecret (ConvertTo-SecureString $clientSecret -AsPlainText -Force)
 
-# Create a pscredent object with the client  and secret
-$psCredential = New-Object System.Management.Automation.PSCredential ($clientId, $secureClientSecret)
-
-# Get an access token
-$token = New-Object Microsoft.IdentityModel.Clients.ActiveDirectory.ClientCredential -ArgumentList $clientId, $secureClientSecret
-$context = [Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext]::new("https://login.microsoftonline.com/$tenantId")
-$accessToken = $context.AcquireTokenAsync("https://graph.microsoft.com", $token).Result.AccessToken
-
-Connect-AzureAD -AadAccessToken $accessToken -AccountId $clientId -TenantId $tenantId
-
+# Connect to Azure AD
+Connect-AzureAD -AadAccessToken $token.AccessToken -AccountId $clientId -TenantId $tenantId
 
 $groupObjectId = $env:GROUP_OBJECT_ID
 $daysThreshold = 30
