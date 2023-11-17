@@ -2,29 +2,26 @@ $clientId = $env:CLIENT
 $clientSecret = $env:SECRET
 $tenantId = $env:TENANT
 
-# Import the Microsoft Graph module
-Import-Module Microsoft.Graph -Force
+# Convert client secret to a SecureString
+$secureClientSecret = ConvertTo-SecureString $clientSecret -AsPlainText -Force
 
-# Connect to Microsoft Graph
-Connect-MgGraph -ClientId $clientId -TenantId $tenantId -ClientSecret (ConvertTo-SecureString $clientSecret -AsPlainText -Force)
+# Create a PSCredential object
+$psCredential = New-Object System.Management.Automation.PSCredential ($clientId, $secureClientSecret)
+
+Connect-MgGraph -ClientId $clientId -TenantId $tenantId -Credential $psCredential
 
 $groupObjectId = $env:GROUP_OBJECT_ID
 $daysThreshold = 30
 $currentDate = Get-Date
 $addedUsers = @()
 
-# Fetch users; adjust the query as per your requirement
 $users = Get-MgUser -Filter "accountEnabled eq true"
 
 Write-Output "Start the process of users..."
 
 foreach ($user in $users) {
-    # Logic to determine user's last sign-in. This will need to be updated based on available Microsoft Graph queries.
-    # Placeholder for your logic to get the last sign-in date
 
-    # Check if user meets criteria and then add to group
     if ($meetsCriteria) {
-        # Placeholder for your logic to add user to group using Microsoft Graph
         $addedUsers += $user.DisplayName
         Write-Output "Added user $($user.DisplayName) to group."
     } else {
