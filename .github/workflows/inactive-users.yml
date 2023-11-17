@@ -14,17 +14,9 @@ jobs:
       - name: Checkout repository code
         uses: actions/checkout@v3
 
-      - name: Setup PowerShell module cache
-        uses: actions/cache@v3
-        with:
-          path: '~/.local/share/powershell/Modules'
-          key: ${{ runner.os }}-SqlServer-PSScriptAnalyzer
-
-      - name: Install MSAL.PS Module
-        if: steps.cache.outputs.cache-hit != 'true'
+      - name: Install Microsoft Graph PowerShell SDK
         run: |
-          Set-PSRepository PSGallery -InstallationPolicy Trusted
-          Install-Module MSAL.PS -Force -Scope CurrentUser -Verbose
+          Install-Module -Name Microsoft.Graph -Force -Scope CurrentUser -Verbose
         shell: pwsh
 
       - name: Run PowerShell script

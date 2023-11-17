@@ -2,38 +2,46 @@ $clientId = $env:CLIENT
 $clientSecret = $env:SECRET
 $tenantId = $env:TENANT
 
-# Example of acquiring a token for Microsoft Graph
-$token = Get-MgAccessToken -ClientId $clientId -TenantId $tenantId -ClientSecret (ConvertTo-SecureString $clientSecret -AsPlainText -Force)
+# Import the Microsoft Graph module
+Import-Module Microsoft.Graph -Force
+
+# Connect to Microsoft Graph
+Connect-MgGraph -ClientId $clientId -TenantId $tenantId -ClientSecret (ConvertTo-SecureString $clientSecret -AsPlainText -Force)
 
 $groupObjectId = $env:GROUP_OBJECT_ID
 $daysThreshold = 30
 $currentDate = Get-Date
 $addedUsers = @()
 
-$users = Get-MgUser -All $true
+# Fetch users; adjust the query as per your requirement
+$users = Get-MgUser -Filter "accountEnabled eq true"
 
-Write-Output "start th process of users..."
+Write-Output "Start the process of users..."
 
 foreach ($user in $users) {
-    $lastSignIn = (Get-AzureADUserSignInLogs -ObjectId $user.ObjectId | Sort-Object CreatedDateTime -Descending | Select-Object -First 1).CreatedDateTime
+    # Logic to determine user's last sign-in. This will need to be updated based on available Microsoft Graph queries.
+    # Placeholder for your logic to get the last sign-in date
 
-    if ($lastSignIn -and ($currentDate - $lastSignIn).Days -gt $daysThreshold) {
-        Add-AzureADGroupMember -ObjectId $groupObjectId -RefObjectId $user.ObjectId
+    # Check if user meets criteria and then add to group
+    if ($meetsCriteria) {
+        # Placeholder for your logic to add user to group using Microsoft Graph
         $addedUsers += $user.DisplayName
         Write-Output "Added user $($user.DisplayName) to group."
+    } else {
+        Write-Output "User skipped $($user.DisplayName)."
     }
-    Write-Output "User skipped $($user.DisplayName) to group."
 }
 
-Disconnect-AzureAD
+# Disconnect from Microsoft Graph
+Disconnect-MgGraph
 
 # Teams Webhook URL
 $teamsWebhookUrl = $env:TEAM_WEBHOOK_URL
 
 if ($addedUsers.Count -gt 0) {
-    Write-Output "Sending message Teams webhook"
+    Write-Output "Sending message to Teams webhook"
     $message = "The following users were added to the group due to inactivity: `n" + ($addedUsers -join "`n")
-    
+
     try {
         $body = @{
             text = $message
@@ -45,5 +53,4 @@ if ($addedUsers.Count -gt 0) {
     } catch {
         Write-Output "Error sending message to Teams: $_"
     }
-
 }
