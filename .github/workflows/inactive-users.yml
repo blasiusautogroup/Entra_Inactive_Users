@@ -22,8 +22,4 @@ jobs:
           GROUP_OBJECT_ID: '6c1b5bfa-a803-454a-8432-db74de88c01e'
           TEAM_WEBHOOK_URL: ${{ secrets.TEAM_WEBHOOK_URL }}
         run: |
-          $clientId = $env:CLIENT
-          $clientSecret = $env:SECRET
-          $tenantId = $env:TENANT
-          $groupObjectId = $env:GROUP_OBJECT_ID
-          $teamsWebhookUrl = $env:TEAM_WEBHOOK_URL
+          .\inactiveusers.ps1
