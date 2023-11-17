@@ -14,8 +14,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install AzureAD Module
+      - name: Cache AzureAD Module
+        uses: actions/cache@v2
+        with:
+          path: ~\Documents\PowerShell\Modules\AzureAD
+          key: ${{ runner.os }}-AzureADModule
+
+      - name: Install required modules
         run: |
+          Install-Module -Name Microsoft.IdentityModel.Clients.ActiveDirectory -Force -Scope CurrentUser
           Install-Module -Name AzureAD -Force -Scope CurrentUser
 
       - name: Run PowerShell script

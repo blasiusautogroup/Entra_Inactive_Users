@@ -1,13 +1,20 @@
-Import-Module AzureAD
-
 $clientId = $env:CLIENT
 $clientSecret = $env:SECRET
 $tenantId = $env:TENANT
 
-$securePassword = ConvertTo-SecureString $clientSecret -AsPlainText -Force
-$psCredential = New-Object System.Management.Automation.PSCredential ($clientId, $securePassword)
+# Convert secret to a secure string
+$secureClientSecret = ConvertTo-SecureString $clientSecret -AsPlainText -Force
 
-Connect-AzureAD -TenantId $tenantId -ApplicationId $clientId -AadAccessToken $psCredential.Secret
+# Create a pscredent object with the client  and secret
+$psCredential = New-Object System.Management.Automation.PSCredential ($clientId, $secureClientSecret)
+
+# Get an access token
+$token = New-Object Microsoft.IdentityModel.Clients.ActiveDirectory.ClientCredential -ArgumentList $clientId, $secureClientSecret
+$context = [Microsoft.IdentityModel.Clients.ActiveDirectory.AuthenticationContext]::new("https://login.microsoftonline.com/$tenantId")
+$accessToken = $context.AcquireTokenAsync("https://graph.microsoft.com", $token).Result.AccessToken
+
+Connect-AzureAD -AadAccessToken $accessToken -AccountId $clientId -TenantId $tenantId
+
 
 $groupObjectId = $env:GROUP_OBJECT_ID
 $daysThreshold = 30
