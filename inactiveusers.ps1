@@ -2,13 +2,8 @@ $clientId = $env:CLIENT
 $clientSecret = $env:SECRET
 $tenantId = $env:TENANT
 
-# Convert client secret to a SecureString
-$secureClientSecret = ConvertTo-SecureString $clientSecret -AsPlainText -Force
-
-# Create a PSCredential object
-$psCredential = New-Object System.Management.Automation.PSCredential ($clientId, $secureClientSecret)
-
-Connect-MgGraph -ClientId $clientId -TenantId $tenantId -Credential $psCredential
+# Connect to Microsoft Graph
+Connect-MgGraph -ClientId $clientId -TenantId $tenantId -ClientSecret $clientSecret
 
 $groupObjectId = $env:GROUP_OBJECT_ID
 $daysThreshold = 30
